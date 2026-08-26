@@ -21,9 +21,12 @@ RUN wget -q https://github.com/Dolibarr/dolibarr/archive/refs/tags/19.0.2.tar.gz
     && cp -r /tmp/dolibarr-19.0.2/htdocs/* /var/www/html/ \
     && rm -rf /tmp/dolibarr*
 
+# Crear y otorgar permisos de escritura a conf.php y documents
 RUN mkdir -p /var/www/documents \
+    && touch /var/www/html/conf/conf.php \
     && chown -R www-data:www-data /var/www/html /var/www/documents \
-    && chmod -R 775 /var/www/documents
+    && chmod 666 /var/www/html/conf/conf.php \
+    && chmod -R 777 /var/www/documents
 
 RUN echo "memory_limit = 128M" > /usr/local/etc/php/conf.d/memory.ini \
     && echo "max_execution_time = 120" >> /usr/local/etc/php/conf.d/memory.ini \
