@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     wget \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_pgsql pgsql xml zip intl \
+    && docker-php-ext-install gd pdo pdo_pgsql pgsql pdo_mysql mysqli xml zip intl \
     && rm -rf /var/lib/apt/lists/*
 
 ENV DOLI_VERSION=19.0.2
