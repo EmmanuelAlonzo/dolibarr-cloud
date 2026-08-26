@@ -21,15 +21,17 @@ RUN wget -q https://github.com/Dolibarr/dolibarr/archive/refs/tags/19.0.2.tar.gz
     && cp -r /tmp/dolibarr-19.0.2/htdocs/* /var/www/html/ \
     && rm -rf /tmp/dolibarr*
 
-# Crear y otorgar permisos de escritura a conf.php y documents
+# Crear documentos, conf.php y el candado de seguridad install.lock
 RUN mkdir -p /var/www/documents \
-    && touch /var/www/html/conf/conf.php \
+    && touch /var/www/documents/install.lock \
     && chown -R www-data:www-data /var/www/html /var/www/documents \
-    && chmod 666 /var/www/html/conf/conf.php \
     && chmod -R 777 /var/www/documents
 
-RUN echo "memory_limit = 128M" > /usr/local/etc/php/conf.d/memory.ini \
-    && echo "max_execution_time = 120" >> /usr/local/etc/php/conf.d/memory.ini \
+# Ocultar deprecated warnings en producción y ajustar memoria
+RUN echo "memory_limit = 128M" > /usr/local/etc/php/conf.d/dolibarr.ini \
+    && echo "max_execution_time = 120" >> /usr/local/etc/php/conf.d/dolibarr.ini \
+    && echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE" >> /usr/local/etc/php/conf.d/dolibarr.ini \
+    && echo "display_errors = Off" >> /usr/local/etc/php/conf.d/dolibarr.ini \
     && echo "ServerName localhost" >> /etc/apache2/apache2.conf \
     && a2enmod rewrite
 
