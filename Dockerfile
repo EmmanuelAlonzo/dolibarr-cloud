@@ -21,13 +21,26 @@ RUN wget -q https://github.com/Dolibarr/dolibarr/archive/refs/tags/19.0.2.tar.gz
     && cp -r /tmp/dolibarr-19.0.2/htdocs/* /var/www/html/ \
     && rm -rf /tmp/dolibarr*
 
-# Crear documentos, conf.php y el candado de seguridad install.lock
+# Configurar conf.php permanente y candado de seguridad
 RUN mkdir -p /var/www/documents \
     && touch /var/www/documents/install.lock \
+    && echo "<?php" > /var/www/html/conf/conf.php \
+    && echo "\$dolibarr_main_url_root='https://dolibarr-constructora.onrender.com';" >> /var/www/html/conf/conf.php \
+    && echo "\$dolibarr_main_document_root='/var/www/html';" >> /var/www/html/conf/conf.php \
+    && echo "\$dolibarr_main_data_root='/var/www/documents';" >> /var/www/html/conf/conf.php \
+    && echo "\$dolibarr_main_db_host='aws-0-us-west-2.pooler.supabase.com';" >> /var/www/html/conf/conf.php \
+    && echo "\$dolibarr_main_db_port='5432';" >> /var/www/html/conf/conf.php \
+    && echo "\$dolibarr_main_db_name='postgres';" >> /var/www/html/conf/conf.php \
+    && echo "\$dolibarr_main_db_prefix='llx_';" >> /var/www/html/conf/conf.php \
+    && echo "\$dolibarr_main_db_user='postgres.vayoscssobmzijnsqnem';" >> /var/www/html/conf/conf.php \
+    && echo "\$dolibarr_main_db_pass='AdminDoli2026!';" >> /var/www/html/conf/conf.php \
+    && echo "\$dolibarr_main_db_type='pgsql';" >> /var/www/html/conf/conf.php \
+    && echo "\$dolibarr_main_prod='1';" >> /var/www/html/conf/conf.php \
     && chown -R www-data:www-data /var/www/html /var/www/documents \
+    && chmod 444 /var/www/html/conf/conf.php \
     && chmod -R 777 /var/www/documents
 
-# Ocultar deprecated warnings en producción y ajustar memoria
+# Silenciar deprecated warnings
 RUN echo "memory_limit = 128M" > /usr/local/etc/php/conf.d/dolibarr.ini \
     && echo "max_execution_time = 120" >> /usr/local/etc/php/conf.d/dolibarr.ini \
     && echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE" >> /usr/local/etc/php/conf.d/dolibarr.ini \
